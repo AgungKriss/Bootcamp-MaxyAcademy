@@ -1,0 +1,120 @@
+<html>
+    <head>
+        <title>AJAX dan Web Services</title>
+        <style>
+            .btn-add, 
+            .btn-delete,
+            .btn-patch,
+            .btn-update {
+                max-width: 100px;
+                padding: 5px;
+                display: inline;
+                margin: 15px 10px;
+                border-radius: 10px;
+            }
+            .btn-add {
+                background-color: rgb(47, 233, 47);
+            }
+            .btn-patch {
+                background-color: rgb(247, 247, 96);
+            }
+            .btn-update {
+                background-color: cyan;                
+            }
+            .btn-delete {
+                background-color: rgb(255, 129, 129);                
+            }
+            .container {
+                background: wheat;
+                width: 340px;
+                margin-left: auto;
+                margin-right: auto;
+                padding: 15px;
+                margin-top: 15px;
+            }
+        </style>
+    </head>    
+    <body>
+        <div class="container">
+            <div id="list-data"></div>
+            <hr>
+            <div class="btn-add" id="add">ADD</div>
+            <div class="btn-patch" id="patch">PATCH</div>
+            <div class="btn-update" id="update">UPDATE</div>
+            <div class="btn-delete" id="delete">DELETE</div>
+        </div>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js" integrity="sha512-+k1pnlgt4F1H8L7t3z95o3/KO+o78INEcXTbnoJQ/F2VqDVhWoaiVml/OEHv9HsVgxUaVW+IbiZPUJQfF/YxZw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script>
+            $(()=>{
+                getData();
+                $("#add").on("click",addData);
+                $("#patch").on("click",patchData);
+                $("#update").on("click",updateData);
+                $("#delete").on("click",deleteData);
+            })
+            function getData(){
+                $.get("http://localhost:3000/posts",(data)=>{
+                    var text = "<ul>";
+                    for(x in data){
+                        var judul = data[x]["title"];
+                        var author = data[x]["author"];
+                        text += "<li>Title : " + judul + "<br/>Author : " + author + "</li>"
+                    }
+                    text += "<ul>"
+                    $("#list-data").html(text);
+                })
+            }
+            function addData(){
+                var data = {
+                    "title":"judul",
+                    "author":"penulis"
+                };
+                $.post("http://localhost:3000/posts",data,(res)=>{
+                    alert("Data berhasil ditambahkan");
+                    getData();
+                })
+            }
+            function patchData(){
+                var id = 2;
+                var link = "http://localhost:3000/posts/" + id;
+                var isiData = {"title":"Ganti judul patch"};
+                $.ajax({
+                    url:link,
+                    type:"PATCH",
+                    data:isiData,
+                    success:(res)=>{
+                        alert("Data berhasil diupdate");
+                        getData();
+                    }
+                })
+            }
+            function updateData(){
+                var id = 2;
+                var link = "http://localhost:3000/posts/" + id;
+                var isiData = {"title":"Ganti judul update"};
+                $.ajax({
+                    url:link,
+                    type:"PUT",
+                    data:isiData,
+                    success:(res)=>{
+                        alert("Data berhasil diupdate");
+                        getData();
+                    }
+                })
+            }
+            function deleteData(){
+                var id = 2;
+                var link = "http://localhost:3000/posts/" + id;
+                $.ajax({
+                    url:link,
+                    type:"DELETE",
+                    success:(data)=>{
+                        alert("Data berhasil dihapus");
+                        getData();
+                    }
+                })
+            }
+        </script>
+    </body>
+</html>
